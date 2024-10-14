@@ -26,7 +26,12 @@
             <div class="item" data-item="{{ item }}">{{ item }}</div>
         {% endfor %}
     </div>
-    <button id="get-recommendations">Get Recommendations</button>
+    <button id="get-recommendations">Get Recommendations from Selected Items</button>
+
+    <h2>Or Enter a User ID</h2>
+    <input type="text" id="user-id" placeholder="Enter User ID">
+    <button id="get-user-recommendations">Get Recommendations for User ID</button>
+
     <h2>Recommended Items</h2>
     <ul id="recommended-items"></ul>
 
@@ -61,7 +66,26 @@
                     }
                 });
             });
+
+            // Send the user ID to the backend and get recommendations
+            $('#get-user-recommendations').click(function () {
+                const userId = $('#user-id').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/recommend',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ user_id: userId }),
+                    success: function (response) {
+                        const recommendations = response.recommended_items;
+                        $('#recommended-items').empty();
+                        recommendations.forEach(item => {
+                            $('#recommended-items').append(`<li>${item}</li>`);
+                        });
+                    }
+                });
+            });
         });
     </script>
 </body>
 </html>
+
