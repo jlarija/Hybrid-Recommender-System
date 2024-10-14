@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommender System</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .item {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #a3d5f7;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Items You Like</h1>
+    <div id="items-container">
+        {% for item in items %}
+            <div class="item" data-item="{{ item }}">{{ item }}</div>
+        {% endfor %}
+    </div>
+    <button id="get-recommendations">Get Recommendations</button>
+    <h2>Recommended Items</h2>
+    <ul id="recommended-items"></ul>
+
+    <script>
+        $(document).ready(function () {
+            let selectedItems = [];
+
+            // Toggle selection of items when clicked
+            $('.item').click(function () {
+                const item = $(this).data('item');
+                $(this).toggleClass('selected');
+                if (selectedItems.includes(item)) {
+                    selectedItems = selectedItems.filter(i => i !== item);
+                } else {
+                    selectedItems.push(item);
+                }
+            });
+
+            // Send selected items to the backend and get recommendations
+            $('#get-recommendations').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/recommend',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ selected_items: selectedItems }),
+                    success: function (response) {
+                        const recommendations = response.recommended_items;
+                        $('#recommended-items').empty();
+                        recommendations.forEach(item => {
+                            $('#recommended-items').append(`<li>${item}</li>`);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

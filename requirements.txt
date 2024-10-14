@@ -1,0 +1,6 @@
+pandas
+numpy
+scipy
+lightfm
+scikit-learn
+openpyxl
